@@ -1,0 +1,82 @@
+<head>
+<link rel="stylesheet" type="text/css" href="common.css">
+<script src="common.js"></script>
+<script>
+function prepareChat(){
+var getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
+    xhr.onload = function() {
+      var status = xhr.status;
+      if (status === 200) {
+        callback(null, xhr.response);
+      } else {
+        callback(status, xhr.response);
+      }
+    };
+    xhr.send();
+};
+
+window.post = function(url, data) {
+//var options = {
+//   method: 'POST',
+//   body: JSON.stringify(data),
+//  headers: {
+//       'Content-Type': 'application/json'
+//   }
+//};
+//fetch('http://localhost:8080/chat/http', options);
+//  .then(response => response.json())
+//  .then(json => console.log(json))
+var xhr = new XMLHttpRequest();
+//var url = "url";
+xhr.open("POST", url, true);
+xhr.setRequestHeader("Content-Type", "application/json");
+xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+        //var json = JSON.parse(xhr.responseText);
+        //console.log(json.email + ", " + json.password);
+		window.lastMessageId = xhr.responseText;
+    }
+}
+var json = JSON.stringify(data);
+xhr.send(json);
+	}
+	function getNewMessages(){
+	var lastMessageId = window.lastMessageId;
+		var adress = lastMessageId == null ? "http://localhost:8080/chat/http" : "http://localhost:8080/chat/http?lastMessageId=" + lastMessageId;
+getJSON(adress,
+function(err, data) {
+  if (err !== null) {
+    alert('Something went wrong: ' + err);
+  } else {
+    data.forEach(function(entry){
+		addMessage(entry.author, entry.content, entry.serverTime);
+		window.lastMessageId = entry.id;
+	});
+  }
+});
+	}
+	
+	//function parseAnswer(status, answer){	
+	window.sendMessageFunction = function(myId, content){
+		post("http://localhost:8080/chat/http", {
+			author : window.myId,
+			content: content,
+			sendingTime: "2019-03-20T10:14:36.103Z"
+		});
+		addOwnMessage(content, null);
+	}
+	//}
+	
+	setInterval(function(){ getNewMessages(); }, 1000);
+}
+</script>
+</head>
+<body onload="prepareChat()">
+<div class="arrow"></div>
+<ul class="ChatLog">
+</ul>
+<textarea id="messageForm" placeholder="No hejka, co tam sie z Toba dzieje? Skad to zwatpienie? Dlaczego chcesz teraz sie poddac, tylko dlatego, ze raz czy drugi Ci nie wyszlo?"></textarea>
+</body>

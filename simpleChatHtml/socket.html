@@ -1,0 +1,38 @@
+<head>
+<link rel="stylesheet" type="text/css" href="common.css">
+<script src="common.js"></script>
+<script>
+function prepareChat(){
+// Create WebSocket connection.
+var url = new URL('/chat/socket', window.location.href);
+url.protocol = url.protocol.replace('http', 'ws');
+const socket = new WebSocket(url.href);
+
+// Connection opened
+//socket.addEventListener('open', function (event) {
+//    socket.send('Hello Server!');
+//});
+
+// Listen for messages
+socket.addEventListener('message', function (event) {
+    var message = JSON.parse(event.data);
+	addMessage(message.author, message.content, message.serverTime);
+});
+
+	window.sendMessageFunction = function(myId, content){
+	var message = JSON.stringify({
+			author : myId,
+			content: content,
+			sendingTime: "2019-03-20T10:14:36.103Z"
+		});
+		socket.send(message);
+	}
+}
+</script>
+</head>
+<body onload="prepareChat()">
+<div class="arrow"></div>
+<ul class="ChatLog">
+</ul>
+<textarea id="messageForm" placeholder="No hejka, co tam sie z Toba dzieje? Skad to zwatpienie? Dlaczego chcesz teraz sie poddac, tylko dlatego, ze raz czy drugi Ci nie wyszlo?"></textarea>
+</body>
