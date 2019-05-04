@@ -13,7 +13,7 @@ public class MvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/**")
-                .addResourceLocations("classpath:/static/", "file:///C:/Users/jk/simpleChat/simpleChatJava/")
+                .addResourceLocations("file:/home/jaksa/IdeaProjects/simpleChat-httpVsSocket/simpleChatJava/src/main/resources/static/")
                 .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES).cachePublic());
     }
 }

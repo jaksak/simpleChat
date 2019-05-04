@@ -13,15 +13,16 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("chat/http")
-public class HttpController {
+@RequestMapping("chat/httpKeepAlive")
+public class HttpKeepAliveController {
 
     MessageService messageService;
 
     @CrossOrigin
     @GetMapping()
     public List<MessageView> getMessagesAfter(@RequestParam(required = false) String lastMessageId, HttpServletResponse response) {
-        response.addHeader("Connection", "close");
+        response.addHeader("Connection", "Keep-Alive");
+        response.addHeader("Keep-Alive", "timeout=60000");
 
         List<Message> messages = lastMessageId == null ? messageService.getAllMessage() : messageService.getMessagesAfter(lastMessageId);
         return messages.stream()
