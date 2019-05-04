@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Test it!</title>
+</head>
+
+<body>
+<script>
+    var repeatAmmount = 5;
+
+    var httpWorker = new Worker('httpWorker.js');
+    var socketWorker = new Worker('socketWorker.js');
+
+    function drawResponse(data) {
+        document.getElementsByTagName("table")[0].innerHTML += "<tr>" +
+            "<th>" + data.method + "</th>\n" +
+            "<th>" + (data.fullTime / repeatAmmount) + "</th>\n" +
+            "<th>" + data.fullTime + "</th>" +
+            "<th>" + data.min + "</th>" +
+            "<th>" + data.max + "</th>" +
+            "</tr>";
+    }
+
+    httpWorker.onmessage = function(event) {
+        drawResponse(event.data)
+    };
+
+    socketWorker.onmessage = function(event) {
+        drawResponse(event.data)
+    };
+
+    function test(method) {
+        var result;
+        switch (method) {
+            case 'http':
+                result = httpWorker.postMessage(['/chat/http', repeatAmmount, method]);
+                break;
+            case 'httpKeepAlive':
+                result = httpWorker.postMessage(['/chat/httpKeepAlive', repeatAmmount, method]);
+                break;
+            case 'socket':
+                result = socketWorker.postMessage(['/chat/socket', repeatAmmount, method, window.location.href]);
+        }
+    }
+</script>
+
+<button onclick="test('http')">Testuj http!</button>
+<button onclick="test('httpKeepAlive')">Testuj http z włączonym nagłówkiem Keep Alive!</button>
+<button onclick="test('socket')">Testuj sockety!</button>
+
+<h2>Wyniki</h2>
+<table>
+    <tr>
+        <th>Użyte rozwiązanie:</th>
+        <th>Średni czas odpowiedzi</th>
+        <th>Całkowity czas eksperymentu</th>
+        <th>Minimalny czas przetworzenia żądania</th>
+        <th>Maksymalny czas przetworzenia żądania</th>
+    </tr>
+</table>
+</body>
+</html>
