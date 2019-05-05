@@ -29,20 +29,24 @@ function sendMessage(socket) {
 function sendMessageIfNecessary(socket, repeatAmmount) {
     if(i < repeatAmmount){
         sendMessage(socket);
+        return null;
     }else{
         socket.close();
         var t1fullTime = performance.now();
-        var data = {
+        return {
             "method": methodName,
             "fullTime": t1fullTime - t0fullTime,
             "min": min,
             "max": max
         };
-        postMessage(data);
     }
 }
 
 self.onmessage = function (event) {
+    i = 0;
+    min = 0;
+    max = 0;
+    t0Partial = null;
     var baseUrl = event.data[0];
     var repeatAmmount = event.data[1];
     methodName = event.data[2];
@@ -54,16 +58,29 @@ self.onmessage = function (event) {
     url.protocol = url.protocol.replace('http', 'ws');
     const socket = new WebSocket(url.href);
 
-    socket.onopen = function() {
-        socket.addEventListener('message', function (event) {
-            if (t0Partial != null) {
-                var t1Partial = performance.now();
-                savePartialResult(t1Partial - t0Partial);
-                i++;
-                sendMessageIfNecessary(socket, repeatAmmount);
-            }
-        });
+    var handleAllRequest = new Promise((resolve, reject) = > {
+        socket.onopen = function () {
+            socket.addEventListener('message', function (event) {
+                if (t0Partial != null) {
+                    var t1Partial = performance.now();
+                    savePartialResult(t1Partial - t0Partial);
+                    i++;
+                    var data = sendMessageIfNecessary(socket, repeatAmmount);
+                    if (data != null) {
+                        resolve(data);
+                    }
+
+                }
+            });
+
+            sendMessageIfNecessary(socket, repeatAmmount);
+        }
     }
+)
+    ;
 
-
+    handleAllRequest
+        .then(data = > postMessage(data)
+)
+    ;
 };

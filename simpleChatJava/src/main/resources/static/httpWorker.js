@@ -18,6 +18,10 @@ self.onmessage = function (event) {
     var repeatAmmount = event.data[1];
     var methodName = event.data[2];
 
+    lastMessageId = null;
+    min = null;
+    max = null;
+
     var t0fullTime = performance.now();
     for (var i = 0; i < repeatAmmount; i++) {
         var t0Partial = performance.now();

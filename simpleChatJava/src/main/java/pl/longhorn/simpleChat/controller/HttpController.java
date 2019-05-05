@@ -35,7 +35,7 @@ public class HttpController {
         return messageService.addMessage(inputData).getId();
     }
 
-    @PostMapping("/clear")
+    @GetMapping("/clear")
     public void clear() {
         messageService.clear();
     }
