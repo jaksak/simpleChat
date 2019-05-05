@@ -7,7 +7,7 @@
 
 <body>
 <script>
-    var repeatAmmount = 5;
+    var repeatAmmount = 3;
 
     var httpWorker = new Worker('httpWorker.js');
     var socketWorker = new Worker('socketWorker.js');
@@ -25,6 +25,7 @@
     httpWorker.onmessage = function(event) {
         drawResponse(event.data)
     };
+    k
 
     socketWorker.onmessage = function(event) {
         drawResponse(event.data)
