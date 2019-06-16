@@ -15,5 +15,11 @@ public class MvcConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/**")
                 .addResourceLocations("file:/home/jaksa/IdeaProjects/simpleChat-httpVsSocket/simpleChatJava/src/main/resources/static/")
                 .setCacheControl(CacheControl.maxAge(1, TimeUnit.MINUTES).cachePublic());
+
+        registry.addResourceHandler("swagger-ui.html")
+                .addResourceLocations("classpath:/META-INF/resources/");
+
+        registry.addResourceHandler("/webjars/**")
+                .addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
 }
